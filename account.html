@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Form Playground - SimpleCheckout</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .instructions {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+        }
+        .instructions ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+        .config-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .config-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .config-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: monospace;
+        }
+        .config-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        .init-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .init-button:hover {
+            background-color: #0056b3;
+        }
+        .init-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        #account-container {
+            margin-top: 20px;
+            min-height: 200px;
+            border: 2px dashed #dee2e6;
+            border-radius: 4px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #account-container.active {
+            border: none;
+            padding: 0;
+            display: block;
+        }
+        .placeholder-text {
+            color: #6c757d;
+            text-align: center;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: 500;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .result-box h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .icon-button {
+            background: none;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: all 0.2s;
+            height: 42px;
+            width: 42px;
+            box-sizing: border-box;
+            background-color: #fff;
+            position: relative;
+        }
+            .icon-button .tooltip {
+                visibility: hidden;
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                border-radius: 4px;
+                padding: 5px 8px;
+                position: absolute;
+                z-index: 1;
+                bottom: 125%; /* Position above the button */
+                left: 50%;
+                transform: translateX(-50%);
+                opacity: 0;
+                transition: opacity 0.1s;
+                font-size: 12px;
+                white-space: nowrap;
+                pointer-events: none;
+            }
+        .icon-button .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .icon-button:hover:not(:disabled) .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .icon-button.show-tooltip .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .icon-button:hover:not(:disabled) {
+            border-color: #007bff;
+            color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .icon-button:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .select-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        .select-wrapper .tooltip {
+            visibility: hidden;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.1s;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .select-wrapper .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .select-wrapper:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .select-wrapper.enabled .tooltip {
+            display: none;
+        }
+        .config-input:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav style="margin-bottom: 20px; text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+            <a href="/" style="margin-right: 15px; text-decoration: none; color: #007bff;">Credit Card Tokenization</a>
+            <span style="color: #ccc;">|</span>
+            <a href="/account.html" style="margin-left: 15px; font-weight: bold; text-decoration: none; color: #333;">Account Connection</a>
+        </nav>
+        <h1>Account Form Playground</h1>
+        <p class="subtitle">Test connecting customer accounts for third-party shops</p>
+
+        <div class="instructions">
+            <h3>How to use:</h3>
+            <ul>
+                <li>Enter your Publishable Key, Customer ID, and Login Source ID below</li>
+                <li>Or pass them as URL params: <code>?publishable_key=pk_xxx&customer_id=cust_xxx&login_source_id=ls_xxx</code></li>
+                <li>Click "Initialize Account Form" to load the branded form</li>
+                <li>The form will automatically fetch shop branding (logo, name, colors)</li>
+                <li>Enter credentials (username/email + password) and submit</li>
+                <li>The system will validate credentials with the provider (this may take a few minutes)</li>
+                <li>Result will be displayed below upon success</li>
+            </ul>
+        </div>
+
+        <div class="config-section">
+            <div class="input-group">
+                <label for="publishable-key">Publishable Key:</label>
+                <input
+                    type="text"
+                    id="publishable-key"
+                    class="config-input"
+                    placeholder="pk_sandbox_..."
+                />
+            </div>
+
+            <div class="input-group">
+                <label for="customer-id">Customer ID:</label>
+                <input
+                    type="text"
+                    id="customer-id"
+                    class="config-input"
+                    placeholder="customer_uuid"
+                />
+            </div>
+
+            <div class="input-group">
+                <label for="login-source-id">Login Source:</label>
+                <div style="display: flex; gap: 10px; align-items: center; position: relative;">
+                    <div class="select-wrapper" id="select-wrapper">
+                        <span class="tooltip">Enter your Publishable Key to load login sources</span>
+                        <select id="login-source-select" class="config-input" disabled>
+                            <option value="">—</option>
+                        </select>
+                    </div>
+                    <button id="copy-source-id-btn" class="icon-button" disabled>
+                        <span class="tooltip" id="copy-tooltip">Copy ID</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                </div>
+                <input type="hidden" id="login-source-id">
+            </div>
+
+            <button id="init-btn" class="init-button">Initialize Account Form</button>
+        </div>
+
+        <div id="status" class="status info">
+            Ready to initialize...
+        </div>
+
+        <div id="account-container">
+            <div class="placeholder-text">
+                Enter configuration above and click "Initialize Account Form" to begin
+            </div>
+        </div>
+
+        <div id="result" style="display: none;" class="result-box">
+            <h4>Result:</h4>
+            <pre id="result-json"></pre>
+        </div>
+    </div>
+
+    <script type="module">
+        import SimpleCheckout from 'simplecheckout-sdk';
+
+        let simplecheckout = null;
+        let accountForm = null;
+
+        const statusEl = document.getElementById('status');
+        const publishableKeyInput = document.getElementById('publishable-key');
+        const customerIdInput = document.getElementById('customer-id');
+        const loginSourceIdInput = document.getElementById('login-source-id');
+        const loginSourceSelect = document.getElementById('login-source-select');
+        const selectWrapper = document.getElementById('select-wrapper');
+        const copySourceIdBtn = document.getElementById('copy-source-id-btn');
+        const initBtn = document.getElementById('init-btn');
+        const accountContainer = document.getElementById('account-container');
+        const resultEl = document.getElementById('result');
+        const resultJsonEl = document.getElementById('result-json');
+
+        function updateStatus(message, type = 'info') {
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function showResult(result) {
+            resultEl.style.display = 'block';
+            resultJsonEl.textContent = JSON.stringify(result, null, 2);
+        }
+
+        async function fetchLoginSources(publishableKey) {
+            try {
+                updateStatus('Fetching login sources...', 'info');
+                loginSourceSelect.disabled = true;
+                
+                simplecheckout = new SimpleCheckout(publishableKey);
+                const response = await simplecheckout.listLoginSources();
+                
+                // Clear existing options
+                loginSourceSelect.innerHTML = '<option value="">Select a Login Source...</option>';
+                
+                if (response.login_sources && response.login_sources.length > 0) {
+                    response.login_sources.forEach(source => {
+                        const option = document.createElement('option');
+                        option.value = source.id;
+                        option.textContent = `${source.name} (${source.domain}) - [${source.id}]`;
+                        loginSourceSelect.appendChild(option);
+                    });
+                    
+                    loginSourceSelect.disabled = false;
+                    selectWrapper.classList.add('enabled');
+                    updateStatus('Login sources loaded.', 'success');
+                    
+                    // If we have a saved login source ID, try to select it
+                    if (loginSourceIdInput.value) {
+                        loginSourceSelect.value = loginSourceIdInput.value;
+                        copySourceIdBtn.disabled = false;
+                    }
+                } else {
+                    updateStatus('No login sources found.', 'info');
+                }
+            } catch (error) {
+                console.error('Failed to fetch login sources:', error);
+                updateStatus(`Failed to fetch login sources: ${error.message}`, 'error');
+                loginSourceSelect.innerHTML = '<option value="">—</option>';
+                selectWrapper.classList.remove('enabled');
+            }
+        }
+
+        async function initializeAccountForm(publishableKey, customerId, loginSourceId) {
+            try {
+                updateStatus('Initializing account form...', 'info');
+                resultEl.style.display = 'none';
+
+                // Clear any existing form
+                accountContainer.innerHTML = '';
+                accountContainer.classList.add('active');
+
+                // If simplecheckout instance doesn't exist (e.g. didn't fetch sources first), create it
+                if (!simplecheckout) {
+                    simplecheckout = new SimpleCheckout(publishableKey);
+                }
+
+                accountForm = await simplecheckout.initAccountForm({
+                    customerId: customerId,
+                    loginSourceId: loginSourceId,
+                    onSuccess: (result) => {
+                        const statusInfo = result.login_status ? ` (Status: ${result.login_status})` : '';
+                        updateStatus(`Success! Account connected.${statusInfo}`, 'success');
+                        console.log('Account connected successfully:', result);
+                        showResult(result);
+                    },
+                    onError: (error) => {
+                        updateStatus(`Error: ${error.message}`, 'error');
+                        console.error('Error connecting account:', error);
+                    }
+                });
+
+                accountForm.mount('#account-container');
+                updateStatus('Account form loaded! Enter credentials and submit.', 'success');
+
+            } catch (error) {
+                updateStatus(`Initialization error: ${error.message}`, 'error');
+                console.error('Initialization error:', error);
+                accountContainer.innerHTML = '<div class="placeholder-text">Failed to load form. Please check your configuration.</div>';
+                accountContainer.classList.remove('active');
+            }
+        }
+
+        // Handle login source selection
+        loginSourceSelect.addEventListener('change', (e) => {
+            loginSourceIdInput.value = e.target.value;
+            copySourceIdBtn.disabled = !e.target.value;
+        });
+
+        // Handle copy source ID button
+        const copyTooltip = document.getElementById('copy-tooltip');
+        copySourceIdBtn.addEventListener('click', () => {
+            const uuid = loginSourceIdInput.value;
+            if (uuid) {
+                navigator.clipboard.writeText(uuid).then(() => {
+                    // Update tooltip text
+                    copyTooltip.textContent = 'Copied!';
+                    
+                    // Change icon to checkmark
+                    const svg = copySourceIdBtn.querySelector('svg');
+                    if (svg) {
+                         const originalSvg = svg.outerHTML;
+                         svg.outerHTML = `
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        `;
+                        
+                        setTimeout(() => {
+                            copyTooltip.textContent = 'Copy ID';
+                            const currentSvg = copySourceIdBtn.querySelector('svg');
+                            if (currentSvg) {
+                                currentSvg.outerHTML = originalSvg;
+                            }
+                        }, 2000);
+                    }
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    updateStatus('Failed to copy ID', 'error');
+                });
+            }
+        });
+
+        // Auto-fetch login sources when publishable key changes
+        let fetchTimeout = null;
+        publishableKeyInput.addEventListener('input', () => {
+            // Debounce the fetch to avoid too many requests while typing
+            if (fetchTimeout) clearTimeout(fetchTimeout);
+            
+            const publishableKey = publishableKeyInput.value.trim();
+            if (publishableKey) {
+                fetchTimeout = setTimeout(() => {
+                    fetchLoginSources(publishableKey);
+                }, 500);
+            } else {
+                // Reset dropdown when key is cleared
+                loginSourceSelect.innerHTML = '<option value="">—</option>';
+                loginSourceSelect.disabled = true;
+                selectWrapper.classList.remove('enabled');
+                loginSourceIdInput.value = '';
+                copySourceIdBtn.disabled = true;
+            }
+        });
+
+        // Check URL parameters on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlPublishableKey = urlParams.get('publishable_key');
+            const urlCustomerId = urlParams.get('customer_id');
+            const urlLoginSourceId = urlParams.get('login_source_id');
+
+            if (urlPublishableKey) {
+                publishableKeyInput.value = urlPublishableKey;
+                // Auto-fetch sources if key is present
+                fetchLoginSources(urlPublishableKey);
+            }
+            if (urlCustomerId) {
+                customerIdInput.value = urlCustomerId;
+            }
+            if (urlLoginSourceId) {
+                loginSourceIdInput.value = urlLoginSourceId;
+            }
+
+            if (urlPublishableKey && urlCustomerId && urlLoginSourceId) {
+                updateStatus('Configuration loaded from URL. Click "Initialize Account Form" to begin.', 'info');
+            }
+        });
+
+        // Initialize button click handler
+        initBtn.addEventListener('click', () => {
+            const publishableKey = publishableKeyInput.value.trim();
+            const customerId = customerIdInput.value.trim();
+            const loginSourceId = loginSourceIdInput.value.trim();
+
+            if (!publishableKey) {
+                updateStatus('Please enter a Publishable Key', 'error');
+                return;
+            }
+
+            if (!customerId) {
+                updateStatus('Please enter a Customer ID', 'error');
+                return;
+            }
+
+            if (!loginSourceId) {
+                updateStatus('Please select a Login Source', 'error');
+                return;
+            }
+
+            initializeAccountForm(publishableKey, customerId, loginSourceId);
+        });
+
+        // Allow Enter key to initialize form
+        [publishableKeyInput, customerIdInput].forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    initBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
