@@ -11,6 +11,6 @@
     "simplecheckout-sdk": "^1.11.0"
   },
   "devDependencies": {
-    "vite": "^5.0.0"
+    "vite": "^7.2.7"
   }
 }
